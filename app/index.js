@@ -89,7 +89,7 @@ util.inherits(Generator, yeoman.generators.Base);
 
 Generator.prototype.askForBootstrap = function askForBootstrap() {
   this.bootstrap = false;
-  this.compassBootstrap = false;
+  this.compassBootstrap = true;
 };
 
 Generator.prototype.askForModules = function askForModules() {
