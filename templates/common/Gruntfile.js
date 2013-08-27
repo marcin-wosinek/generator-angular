@@ -300,7 +300,7 @@ module.exports = function (grunt) {
           concat: '<%%= yeoman.dist %>/scripts/scripts.js',
           module: yeomanConfig.name
         },
-        src: '<%%= yeoman.app %>/views/**.html',
+        src: '<%%= yeoman.app %>/views/**/*.html',
         dest: '.tmp/scripts/templateCache.js'
       }
     },
