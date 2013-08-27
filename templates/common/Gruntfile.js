@@ -13,6 +13,7 @@ module.exports = function (grunt) {
 
   grunt.initConfig({
     yeoman: {
+      name: require('./bower.json').name + 'App',
       // configurable paths
       app: require('./bower.json').appPath || 'app',
       dist: 'dist'
@@ -234,7 +235,7 @@ module.exports = function (grunt) {
         files: [{
           expand: true,
           cwd: '<%%= yeoman.app %>',
-          src: ['*.html', 'views/**/*.html'],
+          src: ['*.html'],
           dest: '<%%= yeoman.dist %>'
         }]
       }
@@ -291,6 +292,17 @@ module.exports = function (grunt) {
         'svgmin',
         'htmlmin'
       ]
+    },
+    ngtemplates: {
+      dist: {
+        options: {
+          base: '<%%= yeoman.app %>',
+          concat: '<%%= yeoman.dist %>/scripts/scripts.js',
+          module: yeomanConfig.name
+        },
+        src: '<%%= yeoman.app %>/views/**.html',
+        dest: '.tmp/scripts/templateCache.js'
+      }
     },
     karma: {
       unit: {
@@ -350,7 +362,8 @@ module.exports = function (grunt) {
     'clean:dist',
     'useminPrepare',
     'concurrent:dist',
-    'autoprefixer',
+    //'autoprefixer',
+    'ngtemplates:dist',
     'concat',
     'copy:dist',
     'cdnify',
