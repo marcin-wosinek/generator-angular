@@ -11,7 +11,7 @@ describe('Service: <%= _.classify(name) %>', function () {
     <%= _.classify(name) %> = _<%= _.classify(name) %>_;
   }));
 
-  it('should do something', function () {
+  it('should be defined', function () {
     expect(!!<%= _.classify(name) %>).toBe(true);
   });
 

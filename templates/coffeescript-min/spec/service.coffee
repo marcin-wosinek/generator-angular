@@ -10,5 +10,5 @@ describe 'Service: <%= _.classify(name) %>', () ->
   beforeEach inject (_<%= _.classify(name) %>_) ->
     <%= _.classify(name) %> = _<%= _.classify(name) %>_
 
-  it 'should do something', () ->
+  it 'should be defined', () ->
     expect(!!<%= _.classify(name) %>).toBe true
