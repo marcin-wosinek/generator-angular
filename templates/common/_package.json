@@ -25,7 +25,8 @@
     "grunt-google-cdn": "~0.2.0",
     "grunt-ngmin": "~0.0.2",
     "time-grunt": "~0.1.0"
-    "grunt-angular-templates": "~0.3.10" // To update
+    "grunt-angular-templates": "~0.3.10", // To update
+    "generator-angular": "https://github.com/marcin-wosinek/generator-angular/tarball/syngular"
   },
   "engines": {
     "node": ">=0.8.0"
