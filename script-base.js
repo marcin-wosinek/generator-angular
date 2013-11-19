@@ -109,7 +109,8 @@ Generator.prototype.addScriptToIndex = function (script) {
       file: fullPath,
       needle: '<!-- endbuild -->',
       splicable: [
-        '  <script src="http://localhost:9000/synergy-core/app/scripts/' + script + '.js"></script>'
+        '  <script src="http://localhost:9000/' + this.syngularLocation +
+        '/app/scripts/' + script + '.js"></script>'
       ]
     });
   } catch (e) {
