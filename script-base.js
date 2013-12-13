@@ -104,7 +104,7 @@ Generator.prototype.addScriptToIndex = function (script) {
       ]
     });
 
-    fullPath = path.join(appPath, this.syngularModule + '.develop.ftl');
+    fullPath = path.join(appPath, 'develop.ftl');
     angularUtils.rewriteFile({
       file: fullPath,
       needle: '<!-- endbuild -->',
