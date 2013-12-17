@@ -172,7 +172,7 @@ Generator.prototype.extraModules = function extraModules() {
   }
 
   if (modules.length) {
-    this.indexFile = this.appendScripts(this.indexFile, 'scripts/modules.js',
+    this.indexFile = this.appendScripts(this.indexFile, '',
         modules);
   }
 };
