@@ -126,7 +126,7 @@ Generator.prototype.bootstrapFiles = function bootstrapFiles() {
   this.indexFile = this.appendFiles({
     html: this.indexFile,
     fileType: 'css',
-    optimizedPath: 'styles/main.css',
+    optimizedPath: 'styles/' + this.appname + '.css',
     sourceFileList: files.map(function (file) {
       return 'styles/' + file.replace('.scss', '.css');
     }),
