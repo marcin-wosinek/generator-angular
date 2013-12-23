@@ -1,14 +1,25 @@
 'use strict';
+var fs = require('fs');
 var path = require('path');
 var util = require('util');
-var spawn = require('child_process').spawn;
+var angularUtils = require('../util.js');
 var yeoman = require('yeoman-generator');
+var chalk = require('chalk');
+var wiredep = require('wiredep');
 
 
 var Generator = module.exports = function Generator(args, options) {
   yeoman.generators.Base.apply(this, arguments);
   this.argument('appname', { type: String, required: false });
   this.appname = this.appname || path.basename(process.cwd());
+  this.appname = this._.camelize(this._.slugify(this._.humanize(this.appname)));
+
+  this.option('app-suffix', {
+    desc: 'Allow a custom suffix to be added to the module name',
+    type: String,
+    required: 'false'
+  });
+  this.scriptAppName = this.appname + angularUtils.appName(this);
 
   args = ['main'];
 
@@ -22,7 +33,9 @@ var Generator = module.exports = function Generator(args, options) {
   this.appPath = this.env.options.appPath;
 
   if (typeof this.env.options.coffee === 'undefined') {
-    this.option('coffee');
+    this.option('coffee', {
+      desc: 'Generate CoffeeScript instead of JavaScript'
+    });
 
     // attempt to detect if user is using CS or not
     // if cml arg provided, use that; else look for the existence of cs
@@ -35,7 +48,9 @@ var Generator = module.exports = function Generator(args, options) {
   }
 
   if (typeof this.env.options.minsafe === 'undefined') {
-    this.option('minsafe');
+    this.option('minsafe', {
+      desc: 'Generate AngularJS minification safe code'
+    });
     this.env.options.minsafe = this.options.minsafe;
     args.push('--minsafe');
   }
@@ -53,7 +68,10 @@ var Generator = module.exports = function Generator(args, options) {
   });
 
   this.on('end', function () {
-    this.installDependencies({ skipInstall: this.options['skip-install'] });
+    this.installDependencies({
+      skipInstall: this.options['skip-install'],
+      callback: this._injectDependencies.bind(this)
+    });
 
     var enabledComponents = [];
 
@@ -69,6 +87,10 @@ var Generator = module.exports = function Generator(args, options) {
       enabledComponents.push('angular-sanitize/angular-sanitize.js');
     }
 
+    if (this.routeModule) {
+      enabledComponents.push('angular-route/angular-route.js');
+    }
+
     this.invoke('karma:app', {
       options: {
         coffee: this.options.coffee,
@@ -80,12 +102,47 @@ var Generator = module.exports = function Generator(args, options) {
         ].concat(enabledComponents)
       }
     });
+
   });
 
-  this.pkg = JSON.parse(this.readFileAsString(path.join(__dirname, '../package.json')));
+  this.pkg = require('../package.json');
 };
 
 util.inherits(Generator, yeoman.generators.Base);
+
+Generator.prototype.welcome = function welcome() {
+  // welcome message
+  if (!this.options['skip-welcome-message']) {
+    console.log(this.yeoman);
+    console.log(
+      'Out of the box I include Bootstrap and some AngularJS recommended modules.\n'
+    );
+
+    // Deprecation notice for minsafe
+    if (this.options.minsafe) {
+      console.warn(
+        '\n** The --minsafe flag is being deprecated in 0.7.0 and removed in ' +
+        '0.8.0. For more information, see ' +
+        'https://github.com/yeoman/generator-angular#minification-safe. **\n'
+      );
+    }
+  }
+};
+
+Generator.prototype.askForCompass = function askForCompass() {
+  var cb = this.async();
+
+  this.prompt([{
+    type: 'confirm',
+    name: 'compass',
+    message: 'Would you like to use Sass (with Compass)?',
+    default: true
+  }], function (props) {
+    this.compass = props.compass;
+
+    cb();
+  }.bind(this));
+};
 
 Generator.prototype.askForBootstrap = function askForBootstrap() {
   this.bootstrap = false;
@@ -99,10 +156,10 @@ Generator.prototype.askForModules = function askForModules() {
 };
 
 Generator.prototype.readIndex = function readIndex() {
+  this.ngRoute = this.env.options.ngRoute;
   this.indexFile = this.engine(this.read('../../templates/common/index.html'), this);
 };
 
-// Waiting a more flexible solution for #138
 Generator.prototype.bootstrapFiles = function bootstrapFiles() {
   var sass = this.compassBootstrap;
   var files = [];
@@ -188,12 +245,39 @@ Generator.prototype.appJs = function appJs() {
 };
 
 Generator.prototype.createIndexHtml = function createIndexHtml() {
+  this.indexFile = this.indexFile.replace(/&apos;/g, "'");
   this.write(path.join(this.appPath, 'index.html'), this.indexFile);
 };
 
 Generator.prototype.packageFiles = function () {
+  this.coffee = this.env.options.coffee;
   this.template('../../templates/common/_bower.json', 'bower.json');
   this.template('../../templates/common/_package.json', 'package.json');
   this.template('../../templates/common/Gruntfile.js', 'Gruntfile.js');
   this.template('../../templates/common/develop.ftl', 'app/develop.ftl');
+};
+
+Generator.prototype.imageFiles = function () {
+  this.sourceRoot(path.join(__dirname, 'templates'));
+  this.directory('images', 'app/images', true);
+};
+
+Generator.prototype._injectDependencies = function _injectDependencies() {
+  var howToInstall =
+    '\nAfter running `npm install & bower install`, inject your front end dependencies into' +
+    '\nyour HTML by running:' +
+    '\n' +
+    chalk.yellow.bold('\n  grunt bower-install');
+
+  if (this.options['skip-install']) {
+    console.log(howToInstall);
+  } else {
+    wiredep({
+      directory: 'app/bower_components',
+      bowerJson: JSON.parse(fs.readFileSync('./bower.json')),
+      ignorePath: 'app/',
+      htmlFile: 'app/index.html',
+      cssPattern: '<link rel="stylesheet" href="{{filePath}}">'
+    });
+  }
 };

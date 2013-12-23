@@ -1,10 +1,10 @@
 {
-  "name": "<%= _.camelize(appname) %>",
+  "name": "<%= _.slugify(_.humanize(appname)) %>",
   "version": "0.0.0",
   "syngularLocation": "unknowLocation",
   "syngularModule": "<%= _.camelize(appname) %>",
   "dependencies": {
-    "angular": "~1.0.7",
+    "angular": "~1.0.8",
     "json3": "~3.2.4",<% if (bootstrap) { %>
     "jquery": "~1.9.1",
     "bootstrap-sass": "~2.3.1",
@@ -16,11 +16,10 @@
     "angular-ui-bootstrap-bower": "~0.3.0",
     "sinonjs": "~1.7.1",
     "jasmine-sinon": "7a14027b49e3291c24c3769e51291e073c534cc4",
-    "jasmine-matchers": "https://github.com/JamieMason/Jasmine-Matchers.git",
-    "angular-localstorage": "db5638ad57de6ea243111a042325ed36e2faf83b"
+    "jasmine-matchers": "https://github.com/JamieMason/Jasmine-Matchers.git"
   },
   "devDependencies": {
-    "angular-mocks": "~1.0.7",
-    "angular-scenario": "~1.0.7"
+    "angular-mocks": "1.2.6",
+    "angular-scenario": "1.2.6"
   }
 }
