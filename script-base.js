@@ -120,6 +120,6 @@ Generator.prototype.addScriptToIndex = function (script) {
 
 Generator.prototype.generateSourceAndTest = function (appTemplate, testTemplate, targetDirectory) {
   this.appTemplate(appTemplate, path.join('scripts', targetDirectory, this.name));
-  this.testTemplate(testTemplate, path.join(targetDirectory, this.name));
+  this.testTemplate(testTemplate, path.join(targetDirectory, this.name + "Spec"));
   this.addScriptToIndex(path.join(targetDirectory, this.name));
 };
